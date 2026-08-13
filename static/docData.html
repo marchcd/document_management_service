@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление справки — КАИ</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Golos+Text:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f4f6f9;
+            --surface: #ffffff;
+            --surface-2: #f8fafc;
+            --border: #d2d6dc;
+            --accent: #0056b3;
+            /* Насыщенный академический синий */
+            --accent-glow: rgba(0, 86, 179, 0.1);
+            --text: #1a1f2c;
+            --muted: #5c6479;
+            --success: #27ae60;
+            --success-glow: rgba(39, 174, 96, 0.15);
+            --danger: #c0392b;
+        }
+
+        body {
+            font-family: 'Golos Text', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 86, 179, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 86, 179, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrapper {
+            max-width: 620px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            gap: 16px;
+        }
+
+        .logo-tag {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-tag::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(18px, 3vw, 28px);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .header-link {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .header-link:hover {
+            color: var(--accent);
+        }
+
+        .header-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .header-link-label {
+            display: inline;
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 86, 179, 0.03);
+        }
+
+        .card-header-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(0, 86, 179, 0.2);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-header-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--accent);
+        }
+
+        .card-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .card-body {
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* ── Fields ── */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Golos Text', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .select-wrap {
+            position: relative;
+        }
+
+        .select-wrap::after {
+            content: '';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid var(--muted);
+            pointer-events: none;
+        }
+
+        select option {
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        /* ── Submit ── */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: opacity 0.15s, box-shadow 0.15s, transform 0.1s;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.95;
+            box-shadow: 0 4px 12px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .btn-submit svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .spinner {
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Response ── */
+        .response {
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .response.success {
+            display: flex;
+            background: var(--success-glow);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .response.error {
+            display: flex;
+            background: rgba(192, 41, 43, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .response svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ════════════════════════════════
+           RESPONSIVE
+        ════════════════════════════════ */
+        @media (max-width: 480px) {
+            body {
+                padding: 24px 16px;
+            }
+
+            .header {
+                margin-bottom: 28px;
+                align-items: flex-end;
+            }
+
+            /* Hide text label on link, keep icon */
+            .header-link-label {
+                display: none;
+            }
+
+            .card-body {
+                padding: 16px;
+            }
+
+            .card-header {
+                padding: 14px 16px;
+            }
+
+            /* Stack course + edu form vertically on very small screens */
+            .row-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-submit {
+                font-size: 12px;
+                padding: 13px;
+            }
+        }
+
+        /* Контейнер для отступа */
+        .checkbox-wrapper {
+            margin-bottom: 20px;
+            padding: 0 4px;
+        }
+
+        /* Скрываем стандартный чекбокс */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: none;
+            /* Отменяем капс из общего label */
+            letter-spacing: normal;
+            user-select: none;
+        }
+
+        .checkbox-label input {
+            display: none;
+        }
+
+        /* Кастомный квадрат */
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            position: relative;
+            transition: all 0.2s;
+            background: var(--surface-2);
+            flex-shrink: 0;
+        }
+
+        /* Состояние Checked */
+        .checkbox-label input:checked+.checkbox-custom {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Галочка внутри */
+        .checkbox-custom::after {
+            content: '';
+            position: absolute;
+            display: none;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox-label input:checked+.checkbox-custom::after {
+            display: block;
+        }
+
+        /* Стили для заблокированной кнопки */
+        .btn-submit:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
+        .checkbox-label a {
+            color: var(--accent);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: opacity 0.15s;
+            margin-left: 4px;
+        }
+
+        .checkbox-label a:hover {
+            opacity: 0.7;
+        }
+
+        .text-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 2px;
+        }
+
+        /* Эффект красивого подчеркивания при наведении */
+        .text-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .text-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <header class="header">
+            <div>
+                <div class="logo-tag">КНИТУ-КАИ · Альметьевский филиал</div>
+                <h1>Оформление справки</h1>
+            </div>
+            <a href="/status" class="header-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Статус заявки
+            </a>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" />
+                        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                    </svg>
+                </div>
+                <span class="card-title">Работодатель</span>
+            </div>
+            <div class="card-body">
+                <div class="field">
+                    <label for="employerName">Полное наименование организации</label>
+                    <input type="text" id="employerName" placeholder="Напр: ООО «Газпром трансгаз Казань»">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                </div>
+                <span class="card-title">Данные студента</span>
+            </div>
+            <div class="card-body">
+                <div class="field">
+                    <label for="studentTitle">ФИО студента (именительный падеж)</label>
+                    <input type="text" id="studentTitle" placeholder="Иванов Иван Иванович">
+                </div>
+                <div class="field">
+                    <label for="studentCard">Номер студенческого билета (только цифры)</label>
+                    <input type="number" id="studentCard" placeholder="440701">
+                </div>
+                <div class="row-2">
+                    <div class="field">
+                        <label for="eduForm">Форма обучения</label>
+                        <div class="select-wrap">
+                            <select id="eduForm">
+                                <option value="заочной">Заочная</option>
+                                <option value="очно-заочной">Очно-заочная</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="course">Курс</label>
+                        <input type="number" id="course" value="1" min="1" max="6">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="group">Номер группы</label>
+                    <input type="number" id="group" placeholder="24473">
+                </div>
+            </div>
+        </div>
+
+        <div class="checkbox-wrapper">
+            <label class="checkbox-label">
+                <input type="checkbox" id="agreeCheckbox" onchange="toggleButton()">
+                <span class="checkbox-custom"></span>
+                Согласен(а) на обработку и хранение персональных данных
+                <a href="https://kai.ru/documents/5815972/5829566/%D0%9F%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B0+%D0%B2+%D0%BE%D1%82%D0%BD%D0%BE%D1%88%D0%B5%D0%BD%D0%B8%D0%B8+%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8+%D0%B8+%D0%B7%D0%B0%D1%89%D0%B8%D1%82%D1%8B+%D0%9F%D0%94%D0%BD+%D0%B2+%D0%9A%D0%9D%D0%98%D0%A2%D0%A3-%D0%9A%D0%90%D0%98+19.03.18%D0%B3..pdf/f07b3d8e-c88c-48a6-a26a-f6307a0b1366"
+                    class="text-link" target="_blank">
+                    Приложение
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                </a>
+            </label>
+        </div>
+
+        <button class="btn-submit" id="submitBtn" onclick="submitForm()" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+            </svg>
+            Сформировать справку
+        </button>
+
+        <div class="response" id="response"></div>
+        <div
+            style="font-size: 12px; color: var(--muted); text-align: center; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); line-height: 1.5;">
+            Контактные данные: 8(8553)22-13-19
+        </div>
+    </div>
+
+    <script>
+        const iconOk = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+        const iconErr = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+        const submitIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+
+        function validateForm() {
+            const fields = [
+                'employerName',
+                'studentTitle',
+                'studentCard',
+                'group'
+            ];
+
+            const allFieldsFilled = fields.every(id => {
+                const val = document.getElementById(id).value.trim();
+                return val !== '';
+            });
+
+            const isAgreed = document.getElementById('agreeCheckbox').checked;
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = !(allFieldsFilled && isAgreed);
+        }
+
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('input', validateForm);
+        });
+
+        function toggleButton() {
+            validateForm();
+        }
+
+        async function submitForm() {
+            const btn = document.getElementById('submitBtn');
+            const respDiv = document.getElementById('response');
+
+            const data = {
+                employer_name: document.getElementById('employerName').value,
+                full_title: document.getElementById('studentTitle').value,
+                student_card: document.getElementById('studentCard').value,
+                education_form: document.getElementById('eduForm').value,
+                course: parseInt(document.getElementById('course').value),
+                study_group: parseInt(document.getElementById('group').value),
+            };
+
+            btn.classList.add('loading');
+            btn.innerHTML = `<div class="spinner"></div> Формируем...`;
+            respDiv.className = 'response';
+
+            try {
+                const res = await fetch('/api/create-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const json = await res.json();
+
+                if (res.ok) {
+                    respDiv.className = 'response success';
+                    respDiv.innerHTML = `${iconOk} Справка №${json.issue_number} успешно создана`;
+                } else {
+                    throw new Error(json.error || 'Ошибка сервера');
+                }
+            } catch (e) {
+                respDiv.className = 'response error';
+                respDiv.innerHTML = `${iconErr} ${e.message}`;
+            } finally {
+                btn.classList.remove('loading');
+                btn.innerHTML = `${submitIcon} Сформировать справку`;
+                validateForm();
+            }
+        }
+    </script>
+</body>
+
+</html>

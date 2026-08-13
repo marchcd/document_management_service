@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реестр справок — КАИ</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Golos+Text:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --accent: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.1);
+            --text: #0f172a;
+            --muted: #64748b;
+            --success: #16a34a;
+            --success-glow: rgba(22, 163, 74, 0.1);
+            --danger: #dc2626;
+            --danger-glow: rgba(220, 38, 38, 0.1);
+        }
+
+        body {
+            font-family: 'Golos Text', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(37, 99, 235, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            gap: 16px;
+        }
+
+        .logo-tag {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-tag::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(18px, 3vw, 28px);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .header-link {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .header-link:hover {
+            color: var(--accent);
+        }
+
+        .header-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ── Filter bar ── */
+        .filter-bar {
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+        }
+
+        .filter-group input[type="date"] {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: var(--text);
+            font-family: 'Golos Text', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .filter-group input[type="date"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .filter-spacer {
+            flex: 1;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .stat-chip {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .stat-chip strong {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: 'Golos Text', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s, box-shadow 0.15s, transform 0.1s, opacity 0.15s;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+
+        .btn-download {
+            background: transparent;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-download:hover {
+            background: var(--accent-glow);
+            box-shadow: 0 0 16px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0) !important;
+        }
+
+        .btn svg {
+            width: 13px;
+            height: 13px;
+            flex-shrink: 0;
+        }
+
+        .btn.loading {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            box-shadow: 0 4px 12px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        /* ── Table ── */
+        .table-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead th {
+            padding: 14px 16px;
+            background: rgba(37, 99, 235, 0.02);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .th-inner {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: default;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            transition: color 0.15s;
+        }
+
+        .th-inner.sortable {
+            cursor: pointer;
+        }
+
+        .th-inner.sortable:hover {
+            color: var(--text);
+        }
+
+        .th-inner.sorted {
+            color: var(--accent);
+        }
+
+        .sort-icon {
+            width: 11px;
+            height: 11px;
+            opacity: 0.3;
+            transition: opacity 0.15s, transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .th-inner.sorted .sort-icon {
+            opacity: 1;
+        }
+
+        .th-inner.sorted.desc .sort-icon {
+            transform: rotate(180deg);
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            animation: fadeIn 0.4s ease both;
+        }
+
+        tbody tr:hover td {
+            background: rgba(37, 99, 235, 0.02);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge-num {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-family: 'Unbounded', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .td-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .td-group {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .td-muted {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .empty p {
+            font-size: 14px;
+        }
+
+        /* ── Spinner ── */
+        .spinner {
+            width: 13px;
+            height: 13px;
+            border: 2px solid rgba(0, 0, 0, 0.15);
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 100;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(.34, 1.56, .64, 1), opacity 0.3s;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            body {
+                padding: 24px 16px;
+            }
+
+            .header {
+                margin-bottom: 28px;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .stats-row {
+                margin-left: 0;
+            }
+
+            .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+        <header class="header">
+            <div>
+                <div class="logo-tag">КНИТУ-КАИ · Альметьевский филиал</div>
+                <h1>Реестр справок</h1>
+            </div>
+            <a href="/requests" class="header-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                </svg>
+                Заявки
+            </a>
+        </header>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label>С</label>
+                <input type="date" id="dateFrom">
+            </div>
+            <div class="filter-group">
+                <label>По</label>
+                <input type="date" id="dateTo">
+            </div>
+            <div class="filter-spacer"></div>
+            <div class="stats-row">
+                <div class="stat-chip">
+                    <strong id="statCount">—</strong>
+                    записей
+                </div>
+                <button class="btn btn-primary" id="downloadBtn" onclick="downloadPDF()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Скачать PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrap">
+            <div class="table-scroll">
+                <table id="registryTable">
+                    <thead>
+                        <tr>
+                            <th><span class="th-inner">№ справки</span></th>
+                            <th><span class="th-inner">ФИО</span></th>
+                            <th>
+                                <span class="th-inner sortable" onclick="sort('study_group')">
+                                    Группа
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="18 15 12 9 6 15" />
+                                    </svg>
+                                </span>
+                            </th>
+                            <th>
+                                <span class="th-inner sortable" onclick="sort('employer_name')">
+                                    Организация
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="18 15 12 9 6 15" />
+                                    </svg>
+                                </span>
+                            </th>
+                            <th>
+                                <span class="th-inner sortable" onclick="sort('issued_at')">
+                                    Дата принятия
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="18 15 12 9 6 15" />
+                                    </svg>
+                                </span>
+                            </th>
+                            <th><span class="th-inner">Документ</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty">
+                                    <div class="empty-icon">📋</div>
+                                    <p>Загрузка...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const iconDownload = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+        let allRows = [];
+        let sortKey = 'issued_at';
+        let sortDir = 'desc';
+
+        const today = new Date();
+        const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        document.getElementById('dateFrom').value = fmt(firstOfMonth);
+        document.getElementById('dateTo').value = fmt(today);
+
+        document.getElementById('dateFrom').addEventListener('change', load);
+        document.getElementById('dateTo').addEventListener('change', load);
+
+        async function load() {
+            const from = document.getElementById('dateFrom').value;
+            const to = document.getElementById('dateTo').value;
+            if (!from || !to) return;
+            setTableLoading();
+            try {
+                const res = await fetch(`/api/registry/preview?from=${from}&to=${to}`);
+                if (!res.ok) throw new Error();
+                allRows = await res.json();
+                renderTable();
+            } catch {
+                document.getElementById('tableBody').innerHTML =
+                    `<tr><td colspan="7"><div class="empty"><div class="empty-icon">⚠️</div><p>Не удалось загрузить данные</p></div></td></tr>`;
+            }
+        }
+
+        function sort(key) {
+            if (sortKey === key) {
+                sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortKey = key;
+                sortDir = 'asc';
+            }
+            renderTable();
+        }
+
+        function renderTable() {
+            document.querySelectorAll('.th-inner').forEach(el => el.classList.remove('sorted', 'desc'));
+            const headers = { study_group: 2, employer_name: 3, issued_at: 5 };
+            const thCells = document.querySelectorAll('.th-inner');
+            const idx = headers[sortKey];
+            if (thCells[idx]) {
+                thCells[idx].classList.add('sorted');
+                if (sortDir === 'desc') thCells[idx].classList.add('desc');
+            }
+
+            const sorted = [...allRows].sort((a, b) => {
+                let va = a[sortKey], vb = b[sortKey];
+                if (sortKey === 'issue_number' || sortKey === 'study_group') {
+                    va = Number(va); vb = Number(vb);
+                } else {
+                    va = String(va).toLowerCase(); vb = String(vb).toLowerCase();
+                }
+                if (va < vb) return sortDir === 'asc' ? -1 : 1;
+                if (va > vb) return sortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            document.getElementById('statCount').textContent = sorted.length;
+
+            const body = document.getElementById('tableBody');
+            if (!sorted.length) {
+                body.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">🔍</div><p>За выбранный период документов нет</p></div></td></tr>`;
+                return;
+            }
+
+            body.innerHTML = sorted.map((r, i) => `
+            <tr style="animation-delay:${i * 20}ms">
+                <td><span class="badge-num">${String(r.issue_number).padStart(4, '0')}</span></td>
+                <td class="td-name">${escHtml(r.full_title_nominative)}</td>
+                <td class="td-group">${r.study_group}</td>
+                <td class="td-muted">${escHtml(r.employer_name || '—')}</td>
+                <td class="td-muted">${escHtml(r.issued_at)}</td>
+                <td>
+                    <button class="btn btn-download" id="dlbtn-${r.issue_number}"
+                        onclick="downloadDoc(${r.issue_number}, '${escHtml(r.issued_at)}', this)">
+                        ${iconDownload} Скачать
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        function setTableLoading() {
+            document.getElementById('statCount').textContent = '—';
+            document.getElementById('tableBody').innerHTML =
+                `<tr><td colspan="7"><div class="empty"><div class="spinner" style="margin:32px auto;border-top-color:var(--accent);border-color:var(--accent-glow)"></div></div></td></tr>`;
+        }
+
+        async function downloadPDF() {
+            const from = document.getElementById('dateFrom').value;
+            const to = document.getElementById('dateTo').value;
+            if (!from || !to) { showToast('Выберите период', 'error'); return; }
+            if (!allRows.length) { showToast('Нет данных за выбранный период', 'error'); return; }
+
+            const btn = document.getElementById('downloadBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = `<div class="spinner"></div> Генерация...`;
+
+            try {
+                const res = await fetch(`/api/registry?from=${from}&to=${to}`);
+                if (!res.ok) throw new Error();
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = `registry_${from}_${to}.pdf`; a.click();
+                URL.revokeObjectURL(url);
+                showToast('Реестр скачан', 'success');
+            } catch {
+                showToast('Не удалось сгенерировать реестр', 'error');
+            } finally {
+                btn.classList.remove('loading');
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Скачать PDF`;
+            }
+        }
+
+        async function downloadDoc(issueNumber, issuedAt, btn) {
+            btn.classList.add('loading');
+            btn.innerHTML = '<div class="spinner" style="width:12px;height:12px;border:2px solid rgba(37,99,235,0.2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.6s linear infinite"></div>';
+
+            try {
+                const res = await fetch(`/api/pdf/${issueNumber}?approved_at=${encodeURIComponent(issuedAt)}`);
+                if (!res.ok) throw new Error();
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `spravka_${String(issueNumber).padStart(4, '0')}.docx`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast(`Справка №${String(issueNumber).padStart(4, '0')} скачана`, 'success');
+            } catch {
+                showToast('Не удалось скачать документ', 'error');
+            } finally {
+                btn.classList.remove('loading');
+                btn.innerHTML = iconDownload + ' Скачать';
+            }
+        }
+
+        function fmt(d) { return d.toISOString().split('T')[0]; }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        function escHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        load();
+    </script>
+</body>
+
+</html>

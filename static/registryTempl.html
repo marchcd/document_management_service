@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Реестр справок-вызов</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 12mm 15mm 12mm 15mm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 10pt;
+            color: #000;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15pt;
+        }
+
+        .header-title {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 5pt;
+        }
+
+        .header-period {
+            font-size: 10pt;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10pt;
+        }
+
+        thead tr th {
+            background: #f2f2f2;
+            border: 0.5pt solid #000;
+            padding: 6pt 4pt;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        tbody tr td {
+            border: 0.5pt solid #000;
+            padding: 6pt 4pt;
+            vertical-align: middle;
+            line-height: 1.2;
+        }
+
+
+        .col-num {
+            width: 5%;
+            text-align: center;
+        }
+
+        .col-doc {
+            width: 10%;
+            text-align: center;
+        }
+
+        .col-name {
+            width: 25%;
+        }
+
+        .col-group {
+            width: 10%;
+            text-align: center;
+        }
+
+        .col-dir {
+            width: 25%;
+        }
+
+        .col-issued {
+            width: 12%;
+            text-align: center;
+        }
+
+        .col-sign {
+            width: 13%;
+        }
+
+        .footer {
+            margin-top: 20pt;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-org">КНИТУ-КАИ · Альметьевский филиал</div>
+        <div class="header-title">Реестр выданных справок-вызов</div>
+        <div class="header-period">
+            Период: {{.PeriodFrom}} — {{.PeriodTo}} &nbsp;·&nbsp; Всего документов: {{.TotalCount}}
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <!-- <th class="col-num">№ п/п</th> -->
+                <th class="col-doc">№ справки</th>
+                <th class="col-name">ФИО студента</th>
+                <th class="col-group">Группа</th>
+                <th class="col-dir">Направление</th>
+                <th class="col-issued">Дата выдачи</th>
+                <th class="col-sign">Подпись</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range $i, $r := .Rows}}
+            <tr>
+                <!-- <td class="col-num">{{inc $i}}</td> -->
+                <td class="col-doc">{{printf "%04d" $r.IssueNumber}}</td>
+                <td class="col-name">{{$r.FullTitleNominative}}</td>
+                <td class="col-group">{{$r.StudyGroup}}</td>
+                <td class="col-dir">{{$r.Direction}}</td>
+                <!-- <td class="col-issued">{{$r.IssuedAt}}</td> -->
+                <td class="col-issued"></td>
+                <td class="col-sign"></td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <span>Сформировано: {{.GeneratedAt}}</span>
+        <span>Итого: {{.TotalCount}} записей</span>
+    </div>
+
+</body>
+
+</html>

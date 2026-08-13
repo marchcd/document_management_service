@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Справка-вызов</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm 10mm 10mm 10mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 14pt;
+            line-height: 1.4;
+            color: #000;
+            margin: 0;
+        }
+
+        /* ── Шапка ── */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .university-info {
+            width: 52%;
+            font-size: 7.5pt;
+            line-height: 1.25;
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4px;
+        }
+
+        .university-info .uni-bold {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 7.5pt;
+        }
+
+        .contact-info {
+            font-size: 7pt;
+            margin-top: 4px;
+        }
+
+        .order-info {
+            width: 44%;
+            text-align: right;
+            font-size: 8.5pt;
+            line-height: 1.4;
+        }
+
+        .order-info .forma {
+            display: block;
+            margin-top: 6px;
+            font-size: 9pt;
+        }
+
+        /* ── Заголовок ── */
+        h2 {
+            text-align: center;
+            font-size: 13pt;
+            font-weight: bold;
+            margin: 14px 0 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 9pt;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .issue-line {
+            text-align: center;
+            margin-bottom: 14px;
+            font-size: 10pt;
+        }
+
+        /* ── Поля с подчёркиванием ── */
+        .field-block {
+            margin-top: 14px;
+        }
+
+        .field-line {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .field-label {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .uline {
+            flex: 1;
+            border-bottom: 1px solid #000;
+            min-height: 14px;
+            text-align: center;
+            font-size: 10pt;
+        }
+
+        .uline-fixed {
+            border-bottom: 1px solid #000;
+            text-align: center;
+        }
+
+        .uline-combined {
+            border-bottom: 1px solid #000;
+            text-align: center;
+            width: 100%;
+            padding-bottom: 0px;
+            font-size: 11pt;
+            line-height: 1;
+            display: inline-block;
+        }
+
+        .sub-label {
+            font-size: 7pt;
+            margin-top: 0px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Строка с датой периода */
+        .date-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            width: 100%;
+            margin-top: 10px;
+
+        }
+
+        .date-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .date-cell .uline-fixed {
+            min-width: 36px;
+        }
+
+        .date-cell .sub-label {
+            width: 100%;
+        }
+
+        .date-month {
+            min-width: 70px;
+        }
+
+        .date-year {
+            min-width: 40px;
+        }
+
+        /* ── Текстовые параграфы ── */
+        p {
+            margin: 10px 0;
+            font-size: 10pt;
+        }
+
+        /* ── Подписи ── */
+        .signature-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 28px;
+            position: relative;
+        }
+
+        .sig-mp {
+            font-size: 9pt;
+            font-weight: normal;
+            transform: translateY(18px);
+        }
+
+        .sig-title {
+            font-size: 10pt;
+            padding-top: 0px;
+        }
+
+        .sig-field {
+            flex: 0 0 170px;
+            text-align: center;
+            margin-left: 16px;
+        }
+
+        .sig-line {
+            border-bottom: 1px solid #000;
+            min-height: 16px;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        .sig-caption {
+            font-size: 7pt;
+            margin-top: 1px;
+            line-height: 1.1;
+        }
+
+        /* ── Линия отрыва ── */
+        .tear-off {
+            border-bottom: 1px dashed #000;
+            margin: 28px 0 20px;
+            position: relative;
+        }
+
+        .tear-off-text {
+            position: absolute;
+            right: 0;
+            bottom: -13px;
+            font-size: 7pt;
+        }
+
+        /* ── Сноска ── */
+        .footer-note {
+            font-size: 7.5pt;
+            margin-top: 16px;
+            text-align: justify;
+        }
+
+        /* ── Inline underline helpers ── */
+        .u {
+            border-bottom: 1px solid #000;
+            text-align: center;
+        }
+
+        /* Addition */
+        .stretch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ ШАПКА ══ -->
+    <div class="header-container">
+        <div class="university-info">
+            <div class="uni-bold">Министерство науки и высшего образования<br>Российской Федерации</div>
+            <div style="margin-top:4px;">
+                Федеральное государственное бюджетное<br>
+                образовательное учреждение<br>
+                высшего образования<br>
+                «Казанский национальный исследовательский технический университет им. А.Н. Туполева-КАИ»<br>
+                (КНИТУ-КАИ)
+            </div>
+            <div class="uni-bold" style="margin-top:4px;">Альметьевский филиал</div>
+            <div class="contact-info">
+                423457, г. Альметьевск, пр-кт Строителей, д. 9 «б»<br>
+                Тел.: (8553) 22-42-55; 31-75-30 &nbsp; Тел. (факс): (8553) 31-75-30<br>
+                E-mail: alf@alf-kai.ru</a>
+            </div>
+        </div>
+
+        <div class="order-info">
+            УТВЕРЖДЕНА<br>
+            приказом Министерства образования<br>
+            и науки Российской Федерации<br>
+            от 19 декабря 2013 г. № 1368
+            <span class="forma">Форма</span>
+        </div>
+    </div>
+
+    <!-- ══ ЗАГОЛОВОК ══ -->
+    <h2>Справка-вызов</h2>
+    <div class="issue-line">
+        от «<span class="u">{{.Issue.Day}}</span>»
+        <span class="u" style="min-width:80px;">{{.Issue.Month}}</span>
+        20<span class="u" style="min-width:22px;">{{.Issue.YearShort}}</span> г.
+        &nbsp;№&nbsp;<span class="u" style="min-width:50px;">{{.Issue.Number}}</span>
+    </div>
+    <div class="subtitle">дающая право на предоставление гарантий и компенсаций работникам,<br>
+        совмещающим работу с получением образования</div>
+
+
+    <!-- ══ РАБОТОДАТЕЛЬ ══ -->
+    <div class="field-block">
+        <div class="field-line">
+            <span class="field-label">Работодателю</span>
+            <span class="uline">{{.Employer.Name}}</span>.
+        </div>
+        <div class="sub-label">полное наименование организации-работодателя/фамилия, имя, отчество работодателя –
+            физического лица</div>
+    </div>
+
+    <!-- ══ СТАТЬЯ ══ -->
+    <div style="display: flex; width: 100%; align-items: baseline; justify-content: space-between;">
+        <span style="white-space: nowrap;">В соответствии со статьей</span>
+        <span style="flex-grow: 1; border-bottom: 1px solid #000; text-align: center; margin: 0 8px;">173</span>
+        <span style="white-space: nowrap;">Трудового кодекса Российской Федерации</span>
+    </div>
+
+    <!-- ══ ФИО ══ -->
+    <div class="field-block">
+        <div class="uline" style="text-align:center;">{{.Student.FullTitle}}</div>
+        <div class="sub-label">фамилия, имя, отчество (в дательном падеже)</div>
+    </div>
+
+    <!-- ══ ФОРМА И КУРС ══ -->
+    <div class="stretch-row">
+        <span>допущенному обучающемуся по</span>
+        <span class="u" style="flex-grow: 1; margin: 0 5px;">{{.Student.EducationForm}}</span>
+        <span>форме обучения на</span>
+        <span class="u" style="min-width: 40px; margin: 0 5px;">{{.Student.Course}}</span>
+        <span>курсе,</span>
+    </div>
+    <div class="stretch-row">
+        <span>предоставляются гарантии и компенсации для </span>
+        <span class="u" style="flex-grow: 1; margin-left: 5px;">прохождения промежуточной аттестации</span>
+    </div>
+
+    <!-- ══ ПЕРИОД ══ -->
+    <div class="date-row">
+        <span>с</span>
+        <div class="date-cell" style="flex-grow: 1; margin: 0 10px;">
+            <div class="uline-combined">
+                {{.Period.StartDay}} {{.Period.StartMonth}} {{.Period.StartYear}} г.
+            </div>
+            <span class="sub-label">число, месяц, год</span>
+        </div>
+        <span>по</span>
+        <div class="date-cell" style="flex-grow: 1; margin: 0 10px;">
+            <div class="uline-combined">
+                {{.Period.EndDay}} {{.Period.EndMonth}} {{.Period.EndYear}} г.
+            </div>
+            <span class="sub-label">число, месяц, год</span>
+        </div>
+    </div>
+
+    <!-- ══ ПРОДОЛЖИТЕЛЬНОСТЬ ══ -->
+    <div class="date-row" style="margin-top: 6px;">
+        <span>продолжительностью</span>
+        <div class="date-cell" style="flex-grow: 1; margin: 0 10px;">
+            <div class="uline-combined">
+                {{.Period.Duration}}
+            </div>
+            <span class="sub-label">количество</span>
+        </div>
+        <span>календарных дней.</span>
+    </div>
+    <!-- ══ АККРЕДИТАЦИЯ ══ -->
+    <p style="margin-top:16px; font-size:9pt; text-align:justify;">
+        Альметьевский филиал федерального государственного бюджетного образовательного учреждения высшего образования
+        «Казанский национальный исследовательский технический университет им. А.Н. Туполева-КАИ»
+        имеет государственную аккредитацию, выданную Федеральной службой по надзору в сфере образования и науки,
+        рег. № А007-00115-16/01255601 от 14.11.2018г.,
+    </p>
+
+    <div style="margin-top: 8px;">
+        <div style="text-align: justify;">по образовательной программе высшего образования по
+            профессии/специальности/направлению подготовки</div>
+
+        <div class="date-cell" style="width: 100%; margin-top: 4px;">
+            <div class="uline-combined" style="width: 100%;">
+                {{.Student.Specialty}}*
+            </div>
+            <span class="sub-label">код и наименование профессии/специальности/направления подготовки</span>
+        </div>
+    </div>
+
+    <!-- ══ ПОДПИСИ ══ -->
+    <div class="signature-container">
+        <div style="display: flex; flex-direction: row; align-items: baseline; gap: 15px;">
+            <div class="sig-title">Директор филиала</div>
+            <div class="sig-mp">М.П.</div>
+        </div>
+
+        <div class="sig-field">
+            <div class="sig-line">&nbsp;</div>
+            <div class="sig-caption">подпись</div>
+        </div>
+
+        <div class="sig-field">
+            <div class="sig-line">Р.С.Шамсутдинов</div>
+            <div class="sig-caption">фамилия, имя, отчество</div>
+        </div>
+    </div>
+
+    <!-- ══ ЛИНИЯ ОТРЫВА ══ -->
+    <div class="tear-off">
+        <span class="tear-off-text">линия отрыва</span>
+    </div>
+
+    <!-- ══ ОТРЫВНАЯ ЧАСТЬ ══ -->
+    <div class="field-block">
+        <div class="uline" style="text-align:center;">{{.Student.FullTitleNominative}}</div>
+        <div class="sub-label">фамилия, имя, отчество</div>
+    </div>
+
+    <p style="margin-top:8px; font-size:9pt; text-align:justify; line-height: 1.5;">
+        находился в
+        <span style="border-bottom: 1px solid #000; display: inline;">
+            Альметьевском филиале федерального государственного бюджетного образовательного учреждения
+            высшего образования «Казанском национальном исследовательском техническом университете им. А.Н.
+            Туполева-КАИ»
+        </span>
+    </p>
+
+    <div class="date-row">
+        <span>с</span>
+        <div class="date-cell" style="flex-grow: 1; margin: 0 10px;">
+            <div class="uline-combined">
+                {{.Period.StartDay}} {{.Period.StartMonth}} {{.Period.StartYear}} г.
+            </div>
+            <span class="sub-label">число, месяц, год</span>
+        </div>
+        <span>по</span>
+        <div class="date-cell" style="flex-grow: 1; margin: 0 10px;">
+            <div class="uline-combined">
+                {{.Period.EndDay}} {{.Period.EndMonth}} {{.Period.EndYear}} г.
+            </div>
+            <span class="sub-label">число, месяц, год</span>
+        </div>
+    </div>
+
+    <!-- ══ ПОДПИСИ ОТРЫВНОЙ ЧАСТИ ══ -->
+    <div class="signature-container">
+        <div style="display: flex; flex-direction: row; align-items: baseline; gap: 15px;">
+            <div class="sig-title">Директор филиала</div>
+            <div class="sig-mp">М.П.</div>
+        </div>
+
+        <div class="sig-field">
+            <div class="sig-line">&nbsp;</div>
+            <div class="sig-caption">подпись</div>
+        </div>
+
+        <div class="sig-field">
+            <div class="sig-line">Р.С.Шамсутдинов</div>
+            <div class="sig-caption">фамилия, имя, отчество</div>
+        </div>
+    </div>
+
+    <!-- ══ СНОСКА (обратная сторона листа) ══ -->
+    <div class="footer-note" style="page-break-before: always;">
+        * Не заполняется для работников, допущенных к вступительным испытаниям; работников, являющихся слушателями
+        подготовительных отделений образовательных организаций высшего образования; работников, осваивающих программы
+        подготовки кадров высшей квалификации; работников, совмещающих работу с обучением по не имеющим государственной
+        аккредитации программам бакалавриата, программам специалитета, программам магистратуры, образовательным
+        программам средного профессионального образования, а также для работников, совмещающих работу с освоением не
+        имеющих государственной аккредитации образовательных программ основного общего или среднего общего образования
+        по очно-заочной форме обучения.

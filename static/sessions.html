@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание сессий — КАИ</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Golos+Text:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-2: #f1f4f9;
+            --surface-3: #e2e8f0;
+            --border: #cbd5e1;
+            --accent: #3b66f5;
+            --accent-glow: rgba(59, 102, 245, 0.1);
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.1);
+        }
+
+        body {
+            font-family: 'Golos Text', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59, 102, 245, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 102, 245, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrapper {
+            max-width: 860px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            gap: 16px;
+        }
+
+        .logo-tag {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-tag::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(18px, 3vw, 26px);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .header-link {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .header-link:hover {
+            color: var(--accent);
+        }
+
+        .header-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            position: sticky;
+            top: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(59, 102, 245, 0.03);
+            font-family: 'Unbounded', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .direction-list {
+            padding: 8px;
+        }
+
+        .direction-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            border: 1px solid transparent;
+            margin-bottom: 2px;
+            color: var(--text);
+        }
+
+        .direction-item:hover {
+            background: var(--surface-2);
+        }
+
+        .direction-item.active {
+            background: var(--accent-glow);
+            border-color: rgba(59, 102, 245, 0.3);
+            color: var(--accent);
+        }
+
+        .direction-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--muted);
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .direction-item.active .direction-dot {
+            background: var(--accent);
+        }
+
+        .direction-name {
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.3;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .direction-count {
+            margin-left: auto;
+            flex-shrink: 0;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .direction-item.active .direction-count {
+            color: var(--accent);
+        }
+
+        .btn-add-direction {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 4px;
+            background: transparent;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            font-family: 'Golos Text', sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+        }
+
+        .btn-add-direction:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .btn-add-direction svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        /* Main panel */
+        .main-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            min-height: 400px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            color: var(--muted);
+            gap: 12px;
+        }
+
+        .panel-empty-icon {
+            font-size: 32px;
+        }
+
+        .panel-empty p {
+            font-size: 13px;
+        }
+
+        /* Panel header with autocomplete */
+        .panel-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(59, 102, 245, 0.03);
+        }
+
+        .panel-header-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .autocomplete-wrap {
+            flex: 1;
+            position: relative;
+        }
+
+        .panel-title-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 14px;
+            color: var(--text);
+            font-family: 'Golos Text', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .panel-title-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .panel-title-input::placeholder {
+            color: var(--muted);
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            z-index: 10;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            animation: dropIn 0.15s ease both;
+        }
+
+        @keyframes dropIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .autocomplete-item {
+            padding: 10px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.1s;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.focused {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .autocomplete-item-count {
+            margin-left: auto;
+            flex-shrink: 0;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 10px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .autocomplete-item:hover .autocomplete-item-count,
+        .autocomplete-item.focused .autocomplete-item-count {
+            color: var(--accent);
+        }
+
+        /* Groups */
+        .groups-section {
+            padding: 20px 24px;
+        }
+
+        .groups-table-header {
+            display: grid;
+            grid-template-columns: 140px 1fr 1fr 40px;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 0 4px;
+        }
+
+        .groups-table-header span {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+        }
+
+        .group-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 1fr 40px;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+            padding: 4px;
+            border-radius: 8px;
+            transition: background 0.1s;
+            animation: rowIn 0.25s ease both;
+        }
+
+        .group-row:hover {
+            background: var(--surface-2);
+        }
+
+        @keyframes rowIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .group-row input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 8px 10px;
+            color: var(--text);
+            font-family: 'Golos Text', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .group-row input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .group-row input::placeholder {
+            color: var(--muted);
+        }
+
+        .group-row input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+
+        .no-groups {
+            text-align: center;
+            padding: 32px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-family: 'Golos Text', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s, box-shadow 0.15s, transform 0.1s, opacity 0.15s;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+
+        .btn:active {
+            transform: translateY(0) !important;
+        }
+
+        .btn svg {
+            width: 13px;
+            height: 13px;
+            flex-shrink: 0;
+        }
+
+        .btn.loading {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .btn-icon {
+            padding: 7px;
+            background: transparent;
+            border-color: transparent;
+            color: var(--muted);
+            border-radius: 7px;
+        }
+
+        .btn-icon:hover {
+            color: var(--danger);
+            background: var(--danger-glow);
+            border-color: var(--danger);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--muted);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--muted);
+        }
+
+        .btn-danger-outline:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: var(--danger-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding: 11px 24px;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 12px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .panel-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            background: rgba(59, 102, 245, 0.02);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .spinner {
+            width: 13px;
+            height: 13px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            left: 28px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 100;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(.34, 1.56, .64, 1), opacity 0.3s;
+            pointer-events: none;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        @media (max-width: 680px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .groups-table-header,
+            .group-row {
+                grid-template-columns: 110px 1fr 1fr 36px;
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+        <header class="header">
+            <div>
+                <div class="logo-tag">КНИТУ-КАИ · Альметьевский филиал</div>
+                <h1>Расписание сессий</h1>
+            </div>
+            <a href="/requests" class="header-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                </svg>
+                Заявки
+            </a>
+        </header>
+
+        <div class="layout">
+            <div class="sidebar">
+                <div class="sidebar-header">Направления</div>
+                <div class="direction-list" id="directionList"></div>
+                <div style="padding: 0 8px 8px;">
+                    <button class="btn-add-direction" onclick="addDirection()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Добавить направление
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-panel" id="mainPanel">
+                <div class="panel-empty">
+                    <div class="panel-empty-icon">📋</div>
+                    <p>Выберите направление слева</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+            <button class="btn btn-primary" id="saveBtn" onclick="save()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                    <polyline points="17 21 17 13 7 13 7 21" />
+                    <polyline points="7 3 7 8 15 8" />
+                </svg>
+                Сохранить всё
+            </button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const iconTrash = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+        const iconPlus = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+
+        let data = [];          // current working copy
+        let original = [];      // snapshot from server (for autocomplete suggestions)
+        let activeIndex = null;
+        let dropdownFocusIdx = -1;
+
+        // ── Load ─────────────────────────────────────────
+        async function load() {
+            try {
+                const res = await fetch('/api/sessions');
+                if (!res.ok) throw new Error();
+                data = await res.json();
+                original = JSON.parse(JSON.stringify(data)); // deep copy as reference
+            } catch {
+                data = []; original = [];
+            }
+            renderSidebar();
+        }
+
+        // ── Sidebar ──────────────────────────────────────
+        function renderSidebar() {
+            const list = document.getElementById('directionList');
+            list.innerHTML = '';
+            data.forEach((dir, di) => {
+                const item = document.createElement('div');
+                item.className = 'direction-item' + (activeIndex === di ? ' active' : '');
+                item.onclick = () => selectDirection(di);
+                item.innerHTML = `
+                <div class="direction-dot"></div>
+                <div class="direction-name">${escHtml(dir.direction) || '<span style="color:var(--muted);font-style:italic">Без названия</span>'}</div>
+                <div class="direction-count">${(dir.groups || []).length}</div>
+            `;
+                list.appendChild(item);
+            });
+        }
+
+        function selectDirection(di) {
+            activeIndex = di;
+            renderSidebar();
+            renderPanel();
+        }
+
+        // ── Main panel ───────────────────────────────────
+        function renderPanel() {
+            const panel = document.getElementById('mainPanel');
+            if (activeIndex === null || !data[activeIndex]) {
+                panel.innerHTML = `<div class="panel-empty"><div class="panel-empty-icon">📋</div><p>Выберите направление слева</p></div>`;
+                return;
+            }
+
+            const di = activeIndex;
+            const dir = data[di];
+            const groups = dir.groups || [];
+
+            panel.innerHTML = `
+            <div class="panel-header">
+                <div class="panel-header-row">
+                    <div class="autocomplete-wrap" id="autocompleteWrap-${di}">
+                        <input
+                            class="panel-title-input"
+                            id="dirInput-${di}"
+                            type="text"
+                            placeholder="Начните вводить название направления..."
+                            value="${escHtml(dir.direction)}"
+                            autocomplete="off"
+                            oninput="onDirectionInput(${di}, this.value)"
+                            onkeydown="onDirectionKeydown(event, ${di})"
+                            onblur="hideDropdown(${di})"
+                        >
+                        <div class="autocomplete-dropdown" id="dropdown-${di}" style="display:none"></div>
+                    </div>
+                    <button class="btn btn-danger-outline" onclick="removeDirection(${di})" title="Удалить направление">
+                        ${iconTrash}
+                    </button>
+                </div>
+            </div>
+
+            <div class="groups-section">
+                <div class="groups-table-header">
+                    <span>Группа</span>
+                    <span>Начало сессии</span>
+                    <span>Конец сессии</span>
+                    <span></span>
+                </div>
+                <div id="groupsList-${di}">
+                    ${groups.length
+                    ? groups.map((g, gi) => groupRowHTML(di, gi, g)).join('')
+                    : '<div class="no-groups">Групп нет — добавьте первую</div>'
+                }
+                </div>
+            </div>
+
+            <div class="panel-footer">
+                <button class="btn btn-ghost" onclick="addGroup(${di})">
+                    ${iconPlus} Добавить группу
+                </button>
+            </div>
+        `;
+        }
+
+        function groupRowHTML(di, gi, g) {
+            return `
+            <div class="group-row" id="group-${di}-${gi}">
+                <input type="number" placeholder="24473" value="${g.group || ''}"
+                    oninput="data[${di}].groups[${gi}].group = parseInt(this.value)||0">
+                <input type="date" value="${g.start_date || ''}"
+                    oninput="data[${di}].groups[${gi}].start_date = this.value">
+                <input type="date" value="${g.end_date || ''}"
+                    oninput="data[${di}].groups[${gi}].end_date = this.value">
+                <button class="btn btn-icon" onclick="removeGroup(${di},${gi})">${iconTrash}</button>
+            </div>
+        `;
+        }
+
+        // ── Autocomplete ─────────────────────────────────
+        function onDirectionInput(di, value) {
+            data[di].direction = value;
+            // Update sidebar in place
+            const items = document.querySelectorAll('.direction-item');
+            if (items[di]) {
+                const el = items[di].querySelector('.direction-name');
+                if (el) el.innerHTML = value || '<span style="color:var(--muted);font-style:italic">Без названия</span>';
+            }
+
+            const query = value.trim().toLowerCase();
+            const dropdown = document.getElementById(`dropdown-${di}`);
+            if (!query) { dropdown.style.display = 'none'; return; }
+
+            // Find matching directions from original data
+            const matches = original.filter(d =>
+                d.direction.toLowerCase().includes(query) &&
+                d.direction !== value // hide exact match
+            );
+
+            if (!matches.length) { dropdown.style.display = 'none'; return; }
+
+            dropdownFocusIdx = -1;
+            dropdown.innerHTML = matches.map((d, i) => `
+            <div class="autocomplete-item" data-idx="${i}" data-di="${di}"
+                onmousedown="selectAutocomplete(event, ${di}, ${JSON.stringify(d).replace(/"/g, '&quot;')})"
+            >
+                <span>${highlightMatch(d.direction, query)}</span>
+                <span class="autocomplete-item-count">${d.groups.length} гр.</span>
+            </div>
+        `).join('');
+            dropdown.style.display = 'block';
+        }
+
+        function onDirectionKeydown(e, di) {
+            const dropdown = document.getElementById(`dropdown-${di}`);
+            if (dropdown.style.display === 'none') return;
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                dropdownFocusIdx = Math.min(dropdownFocusIdx + 1, items.length - 1);
+                items.forEach((el, i) => el.classList.toggle('focused', i === dropdownFocusIdx));
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                dropdownFocusIdx = Math.max(dropdownFocusIdx - 1, 0);
+                items.forEach((el, i) => el.classList.toggle('focused', i === dropdownFocusIdx));
+            } else if (e.key === 'Enter' && dropdownFocusIdx >= 0) {
+                e.preventDefault();
+                items[dropdownFocusIdx].dispatchEvent(new MouseEvent('mousedown'));
+            } else if (e.key === 'Escape') {
+                dropdown.style.display = 'none';
+            }
+        }
+
+        function hideDropdown(di) {
+            // Delay so mousedown on item fires first
+            setTimeout(() => {
+                const d = document.getElementById(`dropdown-${di}`);
+                if (d) d.style.display = 'none';
+            }, 150);
+        }
+
+        function selectAutocomplete(e, di, dirObj) {
+            e.preventDefault();
+            // Fill direction name and load its groups
+            data[di].direction = dirObj.direction;
+            data[di].groups = JSON.parse(JSON.stringify(dirObj.groups));
+            renderSidebar();
+            renderPanel();
+            // Focus first group input so user can start editing
+            document.querySelector(`#groupsList-${di} .group-row input`)?.focus();
+        }
+
+        function highlightMatch(text, query) {
+            const idx = text.toLowerCase().indexOf(query);
+            if (idx === -1) return escHtml(text);
+            return escHtml(text.slice(0, idx))
+                + `<strong style="color:var(--accent)">${escHtml(text.slice(idx, idx + query.length))}</strong>`
+                + escHtml(text.slice(idx + query.length));
+        }
+
+        // ── Mutations ────────────────────────────────────
+        function addDirection() {
+            data.push({ direction: '', groups: [] });
+            activeIndex = data.length - 1;
+            renderSidebar();
+            renderPanel();
+            document.getElementById(`dirInput-${activeIndex}`)?.focus();
+        }
+
+        function removeDirection(di) {
+            data.splice(di, 1);
+            activeIndex = data.length > 0 ? Math.min(di, data.length - 1) : null;
+            renderSidebar();
+            renderPanel();
+        }
+
+        function addGroup(di) {
+            if (!data[di].groups) data[di].groups = [];
+            data[di].groups.push({ group: 0, start_date: '', end_date: '' });
+            renderSidebar();
+            renderPanel();
+            const rows = document.querySelectorAll(`#groupsList-${di} .group-row`);
+            rows[rows.length - 1]?.querySelector('input')?.focus();
+        }
+
+        function removeGroup(di, gi) {
+            data[di].groups.splice(gi, 1);
+            renderSidebar();
+            renderPanel();
+        }
+
+        // ── Save ─────────────────────────────────────────
+        async function save() {
+            const btn = document.getElementById('saveBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = `<div class="spinner"></div> Сохранение...`;
+            try {
+                const res = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const json = await res.json();
+                if (res.ok) {
+                    // Update reference snapshot so autocomplete reflects saved state
+                    original = JSON.parse(JSON.stringify(data));
+                    showToast('Расписание сохранено и применено', 'success');
+                } else {
+                    throw new Error(json.error || 'Ошибка сервера');
+                }
+            } catch (e) {
+                showToast('Ошибка: ' + e.message, 'error');
+            } finally {
+                btn.classList.remove('loading');
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Сохранить всё`;
+            }
+        }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        function escHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        load();
+    </script>
+</body>
+
+</html>

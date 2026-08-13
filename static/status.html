@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус заявки — КАИ</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Golos+Text:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f4f6f9;
+            --surface: #ffffff;
+            --surface-2: #f8fafc;
+            --border: #d2d6dc;
+            --accent: #0056b3;
+            --accent-glow: rgba(0, 86, 179, 0.1);
+            --text: #1a1f2c;
+            --muted: #5c6479;
+            --success: #27ae60;
+            --success-glow: rgba(39, 174, 96, 0.15);
+            --danger: #c0392b;
+            --danger-glow: rgba(192, 57, 43, 0.12);
+            --warning: #d97706;
+            --warning-glow: rgba(217, 119, 6, 0.12);
+        }
+
+        body {
+            font-family: 'Golos Text', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 86, 179, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 86, 179, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            gap: 16px;
+        }
+
+        .logo-tag {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-tag::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(18px, 3vw, 26px);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .header-link {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .header-link:hover {
+            color: var(--accent);
+        }
+
+        .header-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 86, 179, 0.03);
+        }
+
+        .card-header-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(0, 86, 179, 0.2);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-header-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--accent);
+        }
+
+        .card-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .card-body {
+            padding: 20px 24px;
+        }
+
+        /* ── Field ── */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+        }
+
+        input {
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            padding: 11px 14px;
+            font-family: 'Golos Text', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            width: 100%;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        input::placeholder {
+            color: var(--muted);
+        }
+
+        /* ── Button ── */
+        .btn-check {
+            width: 100%;
+            margin-top: 16px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            padding: 13px;
+            cursor: pointer;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+        }
+
+        .btn-check:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .btn-check:active {
+            transform: translateY(0);
+        }
+
+        .btn-check.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .btn-check svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ── Spinner ── */
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Result card ── */
+        .result {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1.5px solid var(--border);
+            animation: slideIn 0.3s ease both;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result.pending {
+            border-color: var(--warning);
+        }
+
+        .result.approved {
+            border-color: var(--success);
+        }
+
+        .result.rejected {
+            border-color: var(--danger);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+        }
+
+        .result.pending .result-header {
+            background: var(--warning-glow);
+        }
+
+        .result.approved .result-header {
+            background: var(--success-glow);
+        }
+
+        .result.rejected .result-header {
+            background: var(--danger-glow);
+        }
+
+        .result-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .result.pending .result-icon {
+            background: rgba(217, 119, 6, 0.15);
+        }
+
+        .result.approved .result-icon {
+            background: rgba(39, 174, 96, 0.15);
+        }
+
+        .result.rejected .result-icon {
+            background: rgba(192, 57, 43, 0.12);
+        }
+
+        .result-status {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .result.pending .result-status {
+            color: var(--warning);
+        }
+
+        .result.approved .result-status {
+            color: var(--success);
+        }
+
+        .result.rejected .result-status {
+            color: var(--danger);
+        }
+
+        .result-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .result-body {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .result-row:first-child {
+            padding-top: 0;
+        }
+
+        .result-row-label {
+            color: var(--muted);
+            flex-shrink: 0;
+        }
+
+        .result-row-value {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .reason-block {
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: var(--danger-glow);
+            border: 1px solid rgba(192, 57, 43, 0.2);
+            border-radius: 9px;
+        }
+
+        .reason-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--danger);
+            margin-bottom: 6px;
+        }
+
+        .reason-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .not-found {
+            text-align: center;
+            padding: 32px 24px;
+            color: var(--muted);
+            font-size: 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            animation: slideIn 0.3s ease both;
+        }
+
+        .not-found-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        /* ── Hint ── */
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 24px 16px;
+            }
+
+            .header {
+                margin-bottom: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+        <header class="header">
+            <div>
+                <div class="logo-tag">КНИТУ-КАИ · Альметьевский филиал</div>
+                <h1>Статус заявки</h1>
+            </div>
+            <a href="/student" class="header-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                </svg>
+                Подать заявку
+            </a>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" />
+                        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                    </svg>
+                </div>
+                <span class="card-title">Проверка статуса</span>
+            </div>
+            <div class="card-body">
+                <div class="field">
+                    <label>Номер студенческого билета</label>
+                    <input type="text" id="studentCard" placeholder="Введите номер" autocomplete="off"
+                        onkeydown="if(event.key==='Enter') checkStatus()">
+                </div>
+                <button class="btn-check" id="checkBtn" onclick="checkStatus()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    Проверить
+                </button>
+            </div>
+        </div>
+
+        <div id="result"></div>
+
+        <p class="hint">Введите номер студенческого билета чтобы узнать статус последней заявки</p>
+
+        <div
+            style="font-size: 12px; color: var(--muted); text-align: center; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); line-height: 1.5;">
+            Контактные данные: 8(8553)22-13-19
+        </div>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const card = document.getElementById('studentCard').value.trim();
+            if (!card) {
+                document.getElementById('studentCard').focus();
+                return;
+            }
+
+            const btn = document.getElementById('checkBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = `<div class="spinner"></div> Проверяем...`;
+
+            try {
+                const res = await fetch(`/api/status/${encodeURIComponent(card)}`);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    renderNotFound(card);
+                    return;
+                }
+
+                renderResult(data);
+            } catch {
+                renderNotFound(card);
+            } finally {
+                btn.classList.remove('loading');
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Проверить`;
+            }
+        }
+
+        function renderResult(d) {
+            const statusMap = {
+                pending: { label: 'На проверке', icon: '⏳' },
+                approved: { label: 'Принята', icon: '✅' },
+                rejected: { label: 'Отклонена', icon: '❌' },
+            };
+            const s = statusMap[d.status] || { label: d.status, icon: '📄' };
+
+            const reasonBlock = (d.status === 'rejected' && d.reject_reason)
+                ? `<div class="reason-block">
+                <div class="reason-label">Причина отказа</div>
+                <div class="reason-text">${escHtml(d.reject_reason)}</div>
+               </div>`
+                : '';
+
+            document.getElementById('result').innerHTML = `
+            <div class="result ${d.status}">
+                <div class="result-header">
+                    <div class="result-icon">${s.icon}</div>
+                    <div>
+                        <div class="result-status">${s.label}</div>
+                        <div class="result-sub">Справка №${d.issue_number} · ${escHtml(d.full_title)}</div>
+                    </div>
+                </div>
+                <div class="result-body">
+                    <div class="result-row">
+                        <span class="result-row-label">Период</span>
+                        <span class="result-row-value">${escHtml(d.period_start)} — ${escHtml(d.period_end)}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-row-label">Дата подачи</span>
+                        <span class="result-row-value">${escHtml(d.created_at)}</span>
+                    </div>
+                    ${reasonBlock}
+                </div>
+            </div>
+        `;
+        }
+
+        function renderNotFound(card) {
+            document.getElementById('result').innerHTML = `
+            <div class="not-found">
+                <div class="not-found-icon">🔍</div>
+                <div>Заявка по номеру <strong>${escHtml(card)}</strong> не найдена</div>
+            </div>
+        `;
+        }
+
+        function escHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+    </script>
+</body>
+
+</html>
