@@ -99,54 +99,7 @@ func (s *DocumentService) DownloadPDF(ctx context.Context, issueNumber int, appr
 		return nil, err
 	}
 
-	russianMonths := []string{
-		"января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря",
-	}
-
-	var issueTime time.Time
-	if approvedAt != "" {
-		parsed, err := time.Parse("02.01.2006", approvedAt)
-		if err == nil {
-			issueTime = parsed
-		} else {
-			issueTime = time.Now()
-		}
-	} else {
-		issueTime = time.Now()
-	}
-
-	start := raw.DocumentType.PeriodStart
-	end := raw.DocumentType.PeriodEnd
-
-	docData := &models.DocumentData{
-		Issue: models.IssueInfo{
-			Number:    fmt.Sprintf("%04d", raw.DocumentType.Number),
-			Day:       fmt.Sprintf("%02d", issueTime.Day()),
-			Month:     russianMonths[issueTime.Month()-1],
-			YearShort: fmt.Sprintf("%02d", issueTime.Year()%100),
-		},
-		Employer: models.EmployerInfo{
-			Name: raw.DocumentType.EmployerName,
-		},
-		Student: models.StudentInfo{
-			StudentCard:         raw.StudentType.StudentCard,
-			FullTitle:           raw.StudentType.FullTitle,
-			FullTitleNominative: raw.StudentType.FullTitleNominative,
-			EducationForm:       raw.StudentType.EducationForm,
-			Course:              raw.StudentType.Course,
-			Specialty:           raw.StudentType.Direction,
-		},
-		Period: models.PeriodInfo{
-			StartDay:   fmt.Sprintf("%02d", start.Day()),
-			StartMonth: russianMonths[start.Month()-1],
-			StartYear:  strconv.Itoa(start.Year()),
-			EndDay:     fmt.Sprintf("%02d", end.Day()),
-			EndMonth:   russianMonths[end.Month()-1],
-			EndYear:    strconv.Itoa(end.Year()),
-			Duration:   raw.DocumentType.Duration,
-		},
-	}
-
+	docData := buildDocumentData(raw, approvedAt)
 	// return pkg.CreatePDF(ctx, docData)
 	return pkg.CreateDocx(docData)
 }
@@ -195,6 +148,61 @@ func (s *DocumentService) DownloadRegistry(ctx context.Context, from, to string)
 		return nil, err
 	}
 
+	data := buildRegistryData(rows, from, to)
+	return pkg.CreateRegistryPDF(ctx, data)
+}
+
+func buildDocumentData(raw *models.DataDocument, approvedAt string) *models.DocumentData {
+	russianMonths := []string{
+		"января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря",
+	}
+
+	var issueTime time.Time
+	if approvedAt != "" {
+		parsed, err := time.Parse("02.01.2006", approvedAt)
+		if err == nil {
+			issueTime = parsed
+		} else {
+			issueTime = time.Now()
+		}
+	} else {
+		issueTime = time.Now()
+	}
+
+	start := raw.DocumentType.PeriodStart
+	end := raw.DocumentType.PeriodEnd
+
+	return &models.DocumentData{
+		Issue: models.IssueInfo{
+			Number:    fmt.Sprintf("%04d", raw.DocumentType.Number),
+			Day:       fmt.Sprintf("%02d", issueTime.Day()),
+			Month:     russianMonths[issueTime.Month()-1],
+			YearShort: fmt.Sprintf("%02d", issueTime.Year()%100),
+		},
+		Employer: models.EmployerInfo{
+			Name: raw.DocumentType.EmployerName,
+		},
+		Student: models.StudentInfo{
+			StudentCard:         raw.StudentType.StudentCard,
+			FullTitle:           raw.StudentType.FullTitle,
+			FullTitleNominative: raw.StudentType.FullTitleNominative,
+			EducationForm:       raw.StudentType.EducationForm,
+			Course:              raw.StudentType.Course,
+			Specialty:           raw.StudentType.Direction,
+		},
+		Period: models.PeriodInfo{
+			StartDay:   fmt.Sprintf("%02d", start.Day()),
+			StartMonth: russianMonths[start.Month()-1],
+			StartYear:  strconv.Itoa(start.Year()),
+			EndDay:     fmt.Sprintf("%02d", end.Day()),
+			EndMonth:   russianMonths[end.Month()-1],
+			EndYear:    strconv.Itoa(end.Year()),
+			Duration:   raw.DocumentType.Duration,
+		},
+	}
+}
+
+func buildRegistryData(rows []models.RegistryRow, from, to string) *models.RegistryData {
 	now := time.Now()
 	russianMonths := []string{
 		"января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря",
@@ -208,13 +216,11 @@ func (s *DocumentService) DownloadRegistry(ctx context.Context, from, to string)
 		return fmt.Sprintf("%02d %s %d", t.Day(), russianMonths[t.Month()-1], t.Year())
 	}
 
-	data := &models.RegistryData{
+	return &models.RegistryData{
 		PeriodFrom:  fmtDate(from),
 		PeriodTo:    fmtDate(to),
 		TotalCount:  len(rows),
 		GeneratedAt: fmt.Sprintf("%02d.%02d.%d", now.Day(), int(now.Month()), now.Year()),
 		Rows:        rows,
 	}
-
-	return pkg.CreateRegistryPDF(ctx, data)
 }

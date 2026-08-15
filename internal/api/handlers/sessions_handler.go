@@ -67,7 +67,7 @@ func (h *SessionsHandler) SaveSessions(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if g.StartDate >= g.EndDate {
-				pkg.SendJSON(w, http.StatusBadRequest, models.ErrorResponse{Error: "Start date >= End date"})
+				pkg.SendJSON(w, http.StatusBadRequest, models.ErrorResponse{Error: "Start date bigger than End date"})
 				return
 			}
 		}
