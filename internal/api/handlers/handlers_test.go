@@ -280,3 +280,32 @@ func TestRegistryHandler_PreviewRegistry(t *testing.T) {
 		})
 	}
 }
+
+func TestRegistryHandler_DownloadRegistry(t *testing.T) {
+	tests := []struct {
+		name       string
+		path       string
+		wantStatus int
+	}{
+		{
+			name:       "ошибка параметра from",
+			path:       "/api/registry?from=2026-01-10&to=",
+			wantStatus: http.StatusBadRequest,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repoMock := new(stubRepo)
+
+			srv := service.NewDocumentService(repoMock, nil)
+			h := NewRegistryHandler(srv)
+
+			rec := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, tt.path, nil)
+			h.DownloadRegistry(rec, req)
+
+			assert.Equal(t, tt.wantStatus, rec.Code)
+		})
+	}
+}

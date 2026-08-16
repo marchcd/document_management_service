@@ -73,7 +73,7 @@ func (s *PostgresStore) CreatePDF(ctx context.Context, data models.DataDocument)
 	}
 
 	if reason != "" {
-		return nil, fmt.Errorf(reason)
+		return nil, fmt.Errorf("%s", reason)
 	}
 
 	insertDoc := `
