@@ -31,21 +31,6 @@ services:
     volumes:
       - ./migrations:/migrations
     command: goose -dir /migrations postgres "host=db user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB} sslmode=disable" up
-    #migrations:
-    #image: gomicro/goose
-    #container_name: kai_migrations
-    #volumes:
-    #  - ./migrations:/migrations
-    # Мы меняем команду на скрипт, который ждет открытия порта 5432
-    #entrypoint: >
-    #  sh -c "
-    #  echo 'Waiting for database...';
-    #  until nc -z db 5432; do
-    #    sleep 1;
-    #  done;
-    #  echo 'Database is up - executing migrations';
-    # goose -dir /migrations postgres \"host=db user=user password=password dbname=kai_db sslmode=disable\" up
-    #  "
     depends_on:
       db:
         condition: service_healthy
