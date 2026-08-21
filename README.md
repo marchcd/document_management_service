@@ -14,3 +14,4 @@
 2. Создать `.env` на основе `.env.example`.
 3. Нужно создать копию data/sessions.json.example. `cp data/sessions.json.example data/sessions.json`
 4. Запустить через Docker: `docker-compose up --build`
+5. После успешного запуска сервиса, рекомендуется добавить направления в `http://localhost:8080/sessions`
